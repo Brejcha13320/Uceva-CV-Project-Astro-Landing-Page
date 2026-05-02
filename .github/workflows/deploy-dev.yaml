@@ -45,7 +45,7 @@ jobs:
           echo "$SITEGROUND_SSH_KEY" > private_key
           chmod 600 private_key
           
-          rsync -avz --delete --dry-run \
+          rsync -avz --delete \
           -e "ssh -i private_key -o StrictHostKeyChecking=no -p $SITEGROUND_PORT"  \
           dist/ $SITEGROUND_USER@$SITEGROUND_HOST:$SITEGROUND_PATH
 
