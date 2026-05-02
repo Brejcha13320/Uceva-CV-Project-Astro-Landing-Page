@@ -1,0 +1,41 @@
+# Nombre del pipeline (aparece en GitHub Actions)
+name: Pipeline Build
+
+# Cuándo se ejecuta el pipeline
+on:
+  push:
+    branches:
+      - feature/*
+      - fix/*
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # 🖥️ Usa una máquina virtual Linux de GitHub
+
+    steps:
+      # 📥 Clona el repositorio en la máquina del runner
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 🟢 Instala Node.js y activa cache para pnpm
+      - name: Setup Node + cache pnpm
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24        # versión de Node
+
+      # 📦 Instala pnpm globalmente
+      # (alternativa más pro: usar pnpm/action-setup)
+      - name: Instalar pnpm
+        run: npm install -g pnpm
+
+      # 📥 Instala dependencias del proyecto
+      - name: Instalar dependencias
+        run: pnpm install --frozen-lockfile
+        # 🔒 Usa el lockfile exacto (pnpm-lock.yaml)
+        # evita inconsistencias entre devs y CI
+
+      # 🏗️ Build del proyecto Astro
+      - name: Build Astro
+        run: pnpm run build
+        # 🔥 ESTE es el paso crítico:
+        # si falla → el PR queda bloqueado
